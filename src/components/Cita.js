@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 
+//REDUX
+
+import {connect} from 'react-redux';
+import {borrarCita} from '../actions/citasActions'
+
 class Cita extends Component {
 
     eliminarCita = () => {
@@ -25,4 +30,4 @@ class Cita extends Component {
     }
 }
  
-export default Cita;
+export default connect(null, {borrarCita}) (Cita);

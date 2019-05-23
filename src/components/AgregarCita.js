@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import uuid from 'uuid';
 
+//Redux
+import {connect} from 'react-redux';
+import {agregarCita} from '../actions/citasActions';
+import {validarFormulario, mostrarError} from '../actions/errorActions'
+
 class AgregarCita extends Component {
   
  //refs
@@ -10,10 +15,11 @@ class AgregarCita extends Component {
  horaRef = React.createRef();
  sintomasRef = React.createRef();
 
-  state = {
-      error: false
-  };
+ componentWillMount() {
+   this.props.validarFormulario(false);
+ }
 
+ //leer cita
   crearNuevaCita = e => {
     e.preventDefault()
     
@@ -24,11 +30,10 @@ class AgregarCita extends Component {
           sintomas = this.sintomasRef.current.value
 
           if(mascota === '' || propietario === '' || fecha === '' || hora === '' || sintomas === '') {
-              this.setState({
-                  error: true
-              })
+              this.props.validarFormulario(true);
           } else {
 
+            //crear el objeto
               const nuevaCita = {
                   id: uuid(),
                   mascota,
@@ -37,23 +42,20 @@ class AgregarCita extends Component {
                   fecha,
                   sintomas
               }
+              this.props.validarFormulario(false);
               
               //se envia el objeto hacia el padre para actualizar el state
-             this.props.crearCita(nuevaCita);
-          
+              this.props.agregarCita(nuevaCita)
+
              //Reiniciar el formulario
              e.currentTarget.reset();
-          
-             this.setState({
-                 error: false
-             })   
           
           }    
   }
 
   render() {
     
-    const existeError = this.state.error;
+    const existeError = this.props.error;
     return (
       <div className="card mt-5">
         <div className="card-body">
@@ -123,4 +125,9 @@ class AgregarCita extends Component {
   }
 }
 
-export default AgregarCita;
+const mapStateToProps = state => ({
+  citas: state.citas.citas,
+  error: state.error.error
+})
+
+export default connect(mapStateToProps, {agregarCita, validarFormulario, mostrarError}) (AgregarCita);
